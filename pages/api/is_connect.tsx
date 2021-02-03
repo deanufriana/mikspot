@@ -1,4 +1,4 @@
-import { conn } from '../configs/mikrotik'
+import { conn } from '../../configs/mikrotik'
 
 export default (req, res) => {
     if (req.method == 'POST') {

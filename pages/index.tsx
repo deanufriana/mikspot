@@ -1,19 +1,14 @@
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
-import { url } from './configs/variable'
 import { NextPageContext } from 'next'
-import { Form, Input, Button } from 'antd'
+import { Form, Input, Button, Card } from 'antd'
 import Router, { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
 
 const layout = {
   labelCol: { span: 8 },
   wrapperCol: { span: 16 },
 };
-
-interface Props {
-  is_connect?: boolean
-}
-
 interface IPConfig {
   host: string;
   user: string;
@@ -21,7 +16,23 @@ interface IPConfig {
 }
 
 const Home = () => {
+
   const router = useRouter()
+  const [isLoading, setLoading] = useState(false)
+
+  useEffect(() => {
+    isConnect()
+  }, [])
+
+  const isConnect = async () => {
+    const res = await fetch(`/api/is_connect`, { method: "POST" })
+    const json = await res.json()
+    debugger
+    if (json.isconnect) {
+      Router.push(`/dashboard`)
+    }
+
+  }
 
   const login = async (value: any) => {
     const { user, password, host } = value
@@ -31,16 +42,17 @@ const Home = () => {
         'Content-Type': 'application/json'
       }, body: JSON.stringify(params)
     }
-    const res = await fetch(`${url}/api/login`, options)
+    setLoading(true)
+    const res = await fetch(`/api/login`, options)
       .catch((err) => {
         alert(JSON.stringify(err))
       })
-
+    setLoading(false)
     if (res)
       if (res.status == 401) {
         alert('Data Tidak Ditemukan')
       } else {
-        router.push(`${url}/dashboard`)
+        router.push(`/dashboard`)
       }
   }
 
@@ -62,36 +74,39 @@ const Home = () => {
         </p> */}
 
         {/* <div className={styles.grid}> */}
-        <Form
-          {...layout}
-          name="basic"
-          onFinish={login}
-        >
-          <Form.Item
-            name="host"
-            label="Host"
-            rules={[{ required: true, message: 'Please input your host!' }]}
+        <Card>
+          <Form
+            {...layout}
+            name="basic"
+            onFinish={login}
           >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="user"
-            label="User"
-            rules={[{ required: true, message: 'Please input your user!' }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="password"
-            label="Password"
-            rules={[{ required: true, message: 'Please input your password!' }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item>
-            <Button type="primary" htmlType="submit">Submit</Button>
-          </Form.Item>
-        </Form>
+            <Form.Item
+              name="host"
+              label="Host"
+              rules={[{ required: true, message: 'Please input your host!' }]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="user"
+              label="User"
+              rules={[{ required: true, message: 'Please input your user!' }]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="password"
+              label="Password"
+
+              rules={[{ required: true, message: 'Please input your password!' }]}
+            >
+              <Input.Password />
+            </Form.Item>
+            <Form.Item>
+              <Button type="primary" loading={isLoading} htmlType="submit">Submit</Button>
+            </Form.Item>
+          </Form>
+        </Card>
         {/* </div> */}
       </main>
 
@@ -107,19 +122,6 @@ const Home = () => {
       </footer>
     </div>
   )
-}
-
-Home.getInitialProps = async ({ req }: NextPageContext) => {
-  console.log('getInitial')
-  const res = await fetch(`${url}/api/is_connect`, { method: "POST" })
-  const json = await res.json()
-
-  if (json.is_connect) {
-    Router.push(`${url}/dashboard`)
-  } else {
-    return { is_connect: json.is_connect }
-  }
-
 }
 
 export default Home

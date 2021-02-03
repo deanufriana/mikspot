@@ -1,43 +1,45 @@
 import 'antd/dist/antd.css'
-import { Layout, Menu, Breadcrumb } from 'antd';
-import { UserOutlined, PieChartOutlined, DesktopOutlined, TeamOutlined, FileOutlined } from '@ant-design/icons';
+import { Layout, Menu } from 'antd';
+import { UserOutlined } from '@ant-design/icons';
 import { useState } from 'react'
-import Home from '../../components/home';
+import Users from '../../components/users';
+import Profiles from '../../components/profiles';
 const { SubMenu } = Menu;
 const { Header, Content, Sider, Footer } = Layout;
 
 function Dashboard() {
 
     const [collapsed, seCollapse] = useState(false)
+    const [menu, setMenu] = useState('users')
+
+    let components;
+
+    switch (menu) {
+        case 'users':
+            components = <Users />
+            break;
+        case 'profiles':
+            components = <Profiles />
+            break;
+        default:
+            break;
+    }
 
     return (
         <Layout style={{ minHeight: '100vh' }}>
-            <Sider collapsible collapsed={collapsed} onCollapse={(value) => seCollapse(value)}>
+            <Sider collapsible collapsed={collapsed}
+                onCollapse={(value) => seCollapse(value)}>
                 <div className="logo" />
-                <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline">
-                    <Menu.Item key="1" icon={<PieChartOutlined />}>
-                        Option 1
-            </Menu.Item>
-                    <Menu.Item key="2" icon={<DesktopOutlined />}>
-                        Option 2
-            </Menu.Item>
-                    <SubMenu key="sub1" icon={<UserOutlined />} title="User">
-                        <Menu.Item key="3">Tom</Menu.Item>
-                        <Menu.Item key="4">Bill</Menu.Item>
-                        <Menu.Item key="5">Alex</Menu.Item>
+                <Menu theme="dark" onClick={(e) => setMenu(e.key.toString())} defaultSelectedKeys={['users']} mode="inline">
+                    <SubMenu key="hotspot" icon={<UserOutlined />} title="Hotspot">
+                        <Menu.Item key="users">Users</Menu.Item>
+                        <Menu.Item key="profiles">Users Profile</Menu.Item>
                     </SubMenu>
-                    <SubMenu key="sub2" icon={<TeamOutlined />} title="Team">
-                        <Menu.Item key="6">Team 1</Menu.Item>
-                        <Menu.Item key="8">Team 2</Menu.Item>
-                    </SubMenu>
-                    <Menu.Item key="9" icon={<FileOutlined />}>
-                        Files
-            </Menu.Item>
                 </Menu>
             </Sider>
             <Layout className="site-layout">
                 <Header className="site-layout-background" style={{ paddingLeft: 20 }}>Mikrotik Sistem</Header>
-                <Home />
+                {components}
                 <Footer style={{ textAlign: 'center' }}>Ant Design ©2018 Created by Ant UED</Footer>
             </Layout>
         </Layout>

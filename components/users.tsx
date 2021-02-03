@@ -3,13 +3,14 @@ import {
     Layout, Breadcrumb, Input, Select, Row, Col, Form, Button, Popconfirm, Table
 } from 'antd';
 import { useState, useEffect } from 'react'
-import { url } from '../pages/configs/variable';
 import bytesToSize from '../lib/bytesToSize';
 import { Option } from 'antd/lib/mentions';
+import { useRouter } from 'next/router';
 const { Content } = Layout;
 
-const Home = () => {
+const Users = () => {
 
+    const router = useRouter()
     const [isLoading, setLoading] = useState(false)
     const [users, setUsers] = useState([])
     const [usersProfile, setUsersProfile] = useState([])
@@ -27,15 +28,15 @@ const Home = () => {
                 'Content-Type': 'application/json'
             }, body: JSON.stringify(params)
         }
-        const res = await fetch(`${url}/api/get_user`, options)
+        const res = await fetch(`/api/get_user`, options)
             .catch(err => {
-                alert('Data tidak ditemukan')
+                router.push(`/`)
                 return
             })
         setLoading(false)
 
         if (res) {
-            if (res.status == 401) return alert('Silahkan Login Ulang')
+            if (res.status == 401) return router.push(`/`)
             const data = await res.json()
             setUsers(data)
         }
@@ -43,9 +44,10 @@ const Home = () => {
 
     const getUserProfile = async () => {
         setLoading(true)
-        const res = await fetch(`${url}/api/get_user_profile`)
+        console.log(router.query)
+        const res = await fetch(`/api/get_user_profile`)
             .catch(err => {
-                alert('Profile tidak ditemukan')
+                // alert('Profile tidak ditemukan')
                 return
             })
         setLoading(false)
@@ -59,7 +61,6 @@ const Home = () => {
     }
 
     const onFinishForm = (value) => {
-        debugger
         getDataUsers(value.userProfile)
     }
 
@@ -145,4 +146,4 @@ const Home = () => {
     )
 }
 
-export default Home
+export default Users

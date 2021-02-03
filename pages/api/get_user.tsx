@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import { conn } from '../configs/mikrotik'
+import { conn } from '../../configs/mikrotik'
 
 export default (req: NextApiRequest, res: NextApiResponse) => {
 
